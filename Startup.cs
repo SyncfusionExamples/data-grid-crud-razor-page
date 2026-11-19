@@ -73,9 +73,7 @@ namespace Grid.Pages
                 }
                 basePath = basePath.TrimEnd('/');
 
-                app.UsePathBase(basePath);
-
-                // Ensure incoming requests matching the root redirect to the base path
+                // Redirect requests accessing "/" (before PathBase is matched) to the base path
                 app.Use(async (context, next) =>
                 {
                     if (context.Request.Path == "/" || string.IsNullOrEmpty(context.Request.Path.Value))
@@ -85,6 +83,8 @@ namespace Grid.Pages
                     }
                     await next();
                 });
+
+                app.UsePathBase(basePath);
             }
 
             // Middleware for Content-Security-Policy and ScriptNonce
