@@ -6,6 +6,8 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
@@ -31,6 +33,13 @@ namespace Grid.Pages
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
+
             services.AddRazorPages();
             services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
             services.AddMvc().AddJsonOptions(o =>
@@ -53,32 +62,32 @@ namespace Grid.Pages
 
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(SyncfusionLicenseKey);
 
-            if (env.IsDevelopment())
+            app.UseForwardedHeaders();
+
+            var basePath = Configuration.GetValue<string>("BasePath") ?? "/datagrid-crud";
+            if (!string.IsNullOrEmpty(basePath))
             {
-                app.UseDeveloperExceptionPage();
+                if (!basePath.StartsWith("/"))
+                {
+                    basePath = "/" + basePath;
+                }
+                basePath = basePath.TrimEnd('/');
+
+                app.UsePathBase(basePath);
+
+                // Ensure incoming requests matching the root redirect to the base path
+                app.Use(async (context, next) =>
+                {
+                    if (context.Request.Path == "/" || string.IsNullOrEmpty(context.Request.Path.Value))
+                    {
+                        context.Response.Redirect(basePath + "/");
+                        return;
+                    }
+                    await next();
+                });
             }
-            else
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
 
-            app.UsePathBase("/datagrid-crud");
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-                        
-            locOptions.Value.RequestCultureProviders.Insert(0, myCustomRequestCultureProvider);
-            app.UseRequestLocalization(locOptions.Value);
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorPages();
-            });
-
+            // Middleware for Content-Security-Policy and ScriptNonce
             app.Use(async (context, next) =>
             {
                 byte[] nonceBytes = new byte[32];
@@ -92,6 +101,31 @@ namespace Grid.Pages
                 "font-src 'self' data: fonts.gstatic.com;" +
                 "object-src 'none';", nonceValue));
                 await next();
+            });
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+                        
+            locOptions.Value.RequestCultureProviders.Insert(0, myCustomRequestCultureProvider);
+            app.UseRequestLocalization(locOptions.Value);
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
             });
         }
     }

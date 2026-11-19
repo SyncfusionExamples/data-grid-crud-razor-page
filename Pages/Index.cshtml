@@ -24,13 +24,13 @@
     <e-grid-pagesettings pageSize="15"></e-grid-pagesettings>
     <e-grid-loadingindicator indicatorType="Spinner"></e-grid-loadingindicator>
     <e-grid-filtersettings type="Excel"></e-grid-filtersettings>
-    <e-data-manager url="/Index?handler=DataSource" insertUrl="/Index?handler=Insert" removeUrl="/Index?handler=Delete"
-                    updateUrl="/Index?handler=Update" adaptor="UrlAdaptor"></e-data-manager>
+    <e-data-manager url="Index?handler=DataSource" insertUrl="Index?handler=Insert" removeUrl="Index?handler=Delete"
+                    updateUrl="Index?handler=Update" adaptor="UrlAdaptor"></e-data-manager>
     <e-grid-columns>
         <e-grid-column field="OrderID" headerText="Order ID" isPrimaryKey="true" textAlign="Right" width="120"></e-grid-column>
         <e-grid-column field="CustomerName" headerText="Customer Name" width="150"></e-grid-column>
         <e-grid-column field="City" headerText="City" width="120"></e-grid-column>
-        <e-grid-column field="EmployeeID" headerText="Employee ID" width="100"></e-grid-column>
+        <e-grid-column field="OrderDate" headerText="OrderDate" textAlign="Right" format="MM/dd/yyyy" editType="DatePickerEdit" width="100"></e-grid-column>
         <e-grid-column field="Freight" headerText="Freight" textAlign="Right" format="C2" width="120"></e-grid-column>
     </e-grid-columns>
 </ejs-grid>
