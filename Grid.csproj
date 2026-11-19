@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <AssemblyName>Grid</AssemblyName>
+    <RootNamespace>Grid</RootNamespace>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>3470dabd-7d43-4956-af22-dc53f3f7968c</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.23" />
+    <PackageReference Include="Syncfusion.EJ2.AspNet.Core" Version="35.2.12" />
+    <PackageReference Include="Syncfusion.Licensing" Version="35.2.12" />
+  </ItemGroup>
+
+</Project>

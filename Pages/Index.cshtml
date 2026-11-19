@@ -1,0 +1,48 @@
+@page
+@using Syncfusion.EJ2
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<style>
+    .e-grid .e-altrow {
+        background-color: #f1f5f9 !important;
+    }
+
+    .e-grid .e-altrow .e-rowcell {
+        background-color: #f1f5f9 !important;
+    }
+</style>
+
+
+@Html.AntiForgeryToken()
+
+<ejs-grid id="Grid" height="70vh" load="onLoad" allowPaging="true" allowSorting="true" allowFiltering="true"
+          toolbar="@(new List<object>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
+    <e-grid-editsettings allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editsettings>
+    <e-grid-pagesettings pageSize="15"></e-grid-pagesettings>
+    <e-grid-loadingindicator indicatorType="Spinner"></e-grid-loadingindicator>
+    <e-grid-filtersettings type="Excel"></e-grid-filtersettings>
+    <e-data-manager url="/Index?handler=DataSource" insertUrl="/Index?handler=Insert" removeUrl="/Index?handler=Delete"
+                    updateUrl="/Index?handler=Update" adaptor="UrlAdaptor"></e-data-manager>
+    <e-grid-columns>
+        <e-grid-column field="OrderID" headerText="Order ID" isPrimaryKey="true" textAlign="Right" width="120"></e-grid-column>
+        <e-grid-column field="CustomerName" headerText="Customer Name" width="150"></e-grid-column>
+        <e-grid-column field="City" headerText="City" width="120"></e-grid-column>
+        <e-grid-column field="EmployeeID" headerText="Employee ID" width="100"></e-grid-column>
+        <e-grid-column field="Freight" headerText="Freight" textAlign="Right" format="C2" width="120"></e-grid-column>
+    </e-grid-columns>
+</ejs-grid>
+
+<script>
+    function onLoad() {
+        this.dataSource.dataSource.headers = [{
+            "XSRF-TOKEN": $("input:hidden[name='__RequestVerificationToken']").val()
+        }];
+    }
+</script>
+
+<div style="margin-top: 15px;">
+    <b>Initial Record Count</b>: @Model.RecordCount
+</div>
