@@ -63,6 +63,7 @@ namespace Grid.Pages
                 app.UseHsts();
             }
 
+            app.UsePathBase("/datagrid-crud");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
                         
