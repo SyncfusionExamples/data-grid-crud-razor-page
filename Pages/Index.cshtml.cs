@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,6 +68,7 @@ namespace Grid.Pages
             val.EmployeeID = ord.EmployeeID;
             val.CustomerID = ord.CustomerID;
             val.CustomerName = ord.CustomerName;
+            val.OrderDate = ord.OrderDate;
             val.Cost=ord.Cost;
             val.Freight=ord.Freight;
             val.Price=ord.Price;
