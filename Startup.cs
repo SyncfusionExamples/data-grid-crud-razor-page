@@ -6,8 +6,6 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
@@ -27,19 +25,9 @@ namespace Grid.Pages
 
         public IConfiguration Configuration { get; }
 
-        // Trial License Key
-        private const string SyncfusionLicenseKey = "NAsnBzUROFJ8W252S0diV1NEdFlfXGFUf1pmRWRTf1h6dFxNYlxTQndeQ1RjTn5Vd0FiXnZXe3dQ";
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
-                options.KnownNetworks.Clear();
-                options.KnownProxies.Clear();
-            });
-
             services.AddRazorPages();
             services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
             services.AddMvc().AddJsonOptions(o =>
@@ -54,40 +42,40 @@ namespace Grid.Pages
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RequestLocalizationOptions> locOptions, MyCustomRequestCultureProvider myCustomRequestCultureProvider)
         {
-            if (string.IsNullOrWhiteSpace(SyncfusionLicenseKey))
+            
+            var syncfusionLicenseKey = "NAsnBzUROFJ8W252S0diV1NEdFlfXGFUf1pmRWRTf1h6dFxNYlxTQndeQ1RjTn5Vd0FiXnZXe3dQ";
+            if (string.IsNullOrWhiteSpace(syncfusionLicenseKey))
             {
                 throw new InvalidOperationException(
-                    "Set the SyncfusionLicenseKey constant in Startup.cs to your Syncfusion license key.");
+                    "The Syncfusion license key is not configured. Set the Syncfusion__LicenseKey environment variable.");
             }
 
-            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(SyncfusionLicenseKey);
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(syncfusionLicenseKey);
 
-            app.UseForwardedHeaders();
-
-            var basePath = Configuration.GetValue<string>("BasePath") ?? "/datagrid-crud";
-            if (!string.IsNullOrEmpty(basePath))
+            if (env.IsDevelopment())
             {
-                if (!basePath.StartsWith("/"))
-                {
-                    basePath = "/" + basePath;
-                }
-                basePath = basePath.TrimEnd('/');
-
-                app.UsePathBase(basePath);
-
-                // Ensure incoming requests matching the root redirect to the base path
-                app.Use(async (context, next) =>
-                {
-                    if (context.Request.Path == "/" || string.IsNullOrEmpty(context.Request.Path.Value))
-                    {
-                        context.Response.Redirect(basePath + "/");
-                        return;
-                    }
-                    await next();
-                });
+                app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+            app.UsePathBase("/datagrid-crud");
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+                        
+            locOptions.Value.RequestCultureProviders.Insert(0, myCustomRequestCultureProvider);
+            app.UseRequestLocalization(locOptions.Value);
 
-            // Middleware for Content-Security-Policy and ScriptNonce
+            app.UseRouting();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+            });
+
             app.Use(async (context, next) =>
             {
                 byte[] nonceBytes = new byte[32];
@@ -101,31 +89,6 @@ namespace Grid.Pages
                 "font-src 'self' data: fonts.gstatic.com;" +
                 "object-src 'none';", nonceValue));
                 await next();
-            });
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-                        
-            locOptions.Value.RequestCultureProviders.Insert(0, myCustomRequestCultureProvider);
-            app.UseRequestLocalization(locOptions.Value);
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorPages();
             });
         }
     }
