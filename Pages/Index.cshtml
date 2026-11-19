@@ -15,17 +15,15 @@
     }
 </style>
 
-
 @Html.AntiForgeryToken()
 
-<ejs-grid id="Grid" height="70vh" load="onLoad" allowPaging="true" allowSorting="true" allowFiltering="true"
-          toolbar="@(new List<object>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
+<ejs-grid id="Grid" height="70vh" allowPaging="true" allowSorting="true" allowFiltering="true" load="onLoad" toolbar="@(new List<object>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
     <e-grid-editsettings allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editsettings>
     <e-grid-pagesettings pageSize="15"></e-grid-pagesettings>
     <e-grid-loadingindicator indicatorType="Spinner"></e-grid-loadingindicator>
     <e-grid-filtersettings type="Excel"></e-grid-filtersettings>
-    <e-data-manager url="Index?handler=DataSource" insertUrl="Index?handler=Insert" removeUrl="Index?handler=Delete"
-                    updateUrl="Index?handler=Update" adaptor="UrlAdaptor"></e-data-manager>
+    <e-data-manager url="/datagrid-crud/Index?handler=DataSource" insertUrl="/datagrid-crud/Index?handler=Insert" removeUrl="/datagrid-crud/Index?handler=Delete"
+                    updateUrl="/datagrid-crud/Index?handler=Update" adaptor="UrlAdaptor"></e-data-manager>
     <e-grid-columns>
         <e-grid-column field="OrderID" headerText="Order ID" isPrimaryKey="true" textAlign="Right" width="120"></e-grid-column>
         <e-grid-column field="CustomerName" headerText="Customer Name" width="150"></e-grid-column>
@@ -44,5 +42,5 @@
 </script>
 
 <div style="margin-top: 15px;">
-    <b>Initial Record Count</b>: @Model.RecordCount
+    <b>Total Record Count</b>: @Model.pRecordCount
 </div>

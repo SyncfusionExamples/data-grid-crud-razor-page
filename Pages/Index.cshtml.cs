@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Syncfusion.EJ2.Base;
 using System.Globalization;
 
-
 namespace Grid.Pages
 {
 
     public class IndexModel : PageModel
     {
 
-        public int RecordCount => OrdersDetails.GetAllRecords().Count;
+        public int pRecordCount => OrdersDetails.GetAllRecords().Count;
 
         public JsonResult OnPostDataSource([FromBody] DataManagerRequest dm)
         {
@@ -164,7 +163,7 @@ namespace Grid.Pages
             public int? EmployeeID { get; set; }
             public decimal Cost { get; set; }
             public decimal Price { get; set; }
-            public string CustomerName { get; set; } = string.Empty;
+            public string? CustomerName { get; set; } = string.Empty;
             public string City { get; set; } = string.Empty;
             public DateTime? OrderDate { get; set; }
             public int Id { get; set; }
