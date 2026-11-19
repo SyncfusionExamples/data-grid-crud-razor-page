@@ -26,10 +26,10 @@ The grid's UrlAdaptor sends POST requests to these Razor Page handlers:
 
 | Handler | Purpose |
 | --- | --- |
-| `/Index?handler=DataSource` | Returns data and applies requested search, sort, filter, grouping, and paging operations. |
-| `/Index?handler=Insert` | Adds a row to the in-memory collection. |
-| `/Index?handler=Update` | Updates a row in the in-memory collection. |
-| `/Index?handler=Delete` | Removes a row from the in-memory collection. |
+| `Index?handler=DataSource` | Returns data and applies requested search, sort, filter, grouping, and paging operations. |
+| `Index?handler=Insert` | Adds a row to the in-memory collection. |
+| `Index?handler=Update` | Updates a row in the in-memory collection. |
+| `Index?handler=Delete` | Removes a row from the in-memory collection. |
 
 Anti-forgery validation is enabled for requests from the page; the grid sends the page's anti-forgery token in the `XSRF-TOKEN` header.
 
